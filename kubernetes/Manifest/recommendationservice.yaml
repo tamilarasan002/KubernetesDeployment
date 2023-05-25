@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+  labels:
+    app: recommendationservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendationservice
+  template:
+    metadata:
+      labels:
+        app: recommendationservice
+    spec:
+      containers:
+        - name: recommendationservice
+          image: <ACR Name>.azurecr.io/recommendationservice:v1
+          ports:
+            - containerPort: 8085
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendationservice
+  namespace: NonProd
+spec:
+  type: ClusterIP
+  selector:
+    app: recommendationservice
+  ports:
+  - name: http
+    port: 8085
+    targetPort: 8085

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  labels:
+    app: checkoutservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkoutservice
+  template:
+    metadata:
+      labels:
+        app: checkoutservice
+    spec:
+      containers:
+       - name: checkoutservice
+         image: <ACR Name>.azurecr.io/checkoutservice:v1
+         ports:
+          - containerPort: 5050
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkoutservice
+  namespace: NonProd
+spec:
+  type: ClusterIP
+  selector:
+    app: checkoutservice
+  ports:
+  - name: http
+    port: 5050
+    targetPort: 5050

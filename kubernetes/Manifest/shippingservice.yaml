@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+  labels:
+    app: shippingservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shippingservice
+  template:
+    metadata:
+      labels:
+        app: shippingservice
+    spec:
+      containers:
+        - name: shippingservice
+          image: <ACR Name>.azurecr.io/shippingservice:v1
+          ports:
+            - containerPort: 50051
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shippingservice
+  namespace: NonProd
+spec:
+  type: ClusterIP
+  selector:
+    app: shippingservice
+  ports:
+  - name: http
+    port: 50051
+    targetPort: 50051
