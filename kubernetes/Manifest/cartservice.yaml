@@ -23,7 +23,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cartservice
-  namespace: NonProd
+  namespace: nonprod
 spec:
   type: ClusterIP
   selector:
