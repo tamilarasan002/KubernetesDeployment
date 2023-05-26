@@ -1,7 +1,7 @@
 name: Build and Deploy to AKS - Adservice
 on:
   push:
-    branches: ["Dev"]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -28,8 +28,6 @@ jobs:
               cd src/adservice
               docker build -t $ACR_NAME.azurecr.io/adservice-prod:latest .
               docker push $ACR_NAME.azurecr.io/adservice-prod:latest  
-        
-    
     
     - name: Deploy to AKS
       uses: azure/k8s-set-context@v1
