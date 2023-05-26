@@ -1,4 +1,4 @@
-name: Build and Deploy to AKS
+name: Build and Deploy to AKS - Adservice
 on:
   push:
     branches: ["Dev"]
