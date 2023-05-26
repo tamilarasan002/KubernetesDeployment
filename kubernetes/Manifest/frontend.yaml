@@ -23,7 +23,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend
-  namespace: nonprod
+  namespace: prod
 spec:
   type: ClusterIP
   selector:
