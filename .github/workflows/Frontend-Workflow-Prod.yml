@@ -2,7 +2,7 @@ name: Build and Deploy to AKS - Frontend
 
 on:
   push:
-    branches: ["Dev"]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -27,8 +27,8 @@ jobs:
     - name: Build and push Docker images
       run: |
           cd src/frontend
-          docker build -t $ACR_NAME.azurecr.io/frontend-nonprod:latest .
-          docker push $ACR_NAME.azurecr.io/frontend-nonprod:latest
+          docker build -t $ACR_NAME.azurecr.io/frontend-prod:latest .
+          docker push $ACR_NAME.azurecr.io/frontend-prod:latest
           
     - name: Deploy to AKS
       uses: azure/k8s-set-context@v1
