@@ -20,6 +20,7 @@ spec:
          ports:
            - containerPort: 7000
 
+
 ---
 apiVersion: v1
 kind: Service
