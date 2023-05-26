@@ -2,7 +2,7 @@ name: Build and Deploy to AKS - CurrencyService
 
 on:
   push:
-    branches: ["Dev"]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -27,8 +27,8 @@ jobs:
     - name: Build and push Docker images
       run: |
           cd src/currencyservice
-          docker build -t $ACR_NAME.azurecr.io/currencyservice-nonprod:latest .
-          docker push $ACR_NAME.azurecr.io/currencyservice-nonprod:latest
+          docker build -t $ACR_NAME.azurecr.io/currencyservice-prod:latest .
+          docker push $ACR_NAME.azurecr.io/currencyservice-prod:latest
           
           
     - name: Deploy to AKS
