@@ -2,41 +2,37 @@ name: Build and Deploy to AKS - productCatalogService
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - Dev
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v2
 
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  
-    - name: Login to ACR
-      uses: azure/docker-login@v1
-      with:
-        login-server: myacr.azurecr.io
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+      - name: Login to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Build and push Docker images
-      run: |
+      - name: Build and push Docker images
+        run: |
           cd src/productcatalogservice
-          docker build -t $ACR_NAME.azurecr.io/productcatalogservice-prod:latest .
-          docker push $ACR_NAME.azurecr.io/productcatalogservice-prod:latest
-          
-    - name: Deploy to AKS
-      uses: azure/k8s-set-context@v1
-      with:
-        method: kubeconfig
-        kubeconfig: ${{ secrets.KUBECONFIG }}
+          docker build -t ${{ secrets.ACR_REGISTRY }}/productcatalogservice-nonprod:latest .
+          docker push ${{ secrets.ACR_REGISTRY }}/productcatalogservice-nonprod:latest
 
-    - name: Apply Kubernetes manifests
-      run: |
-       cd kubernetes/Manifest/
-       kubectl apply -f productcatalogservice.yaml
+      - name: Deploy to AKS
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: Apply Kubernetes manifests
+        run: |
+          cd kubernetes/Manifest
+          kubectl apply -f productcatalogservice.yaml
