@@ -2,8 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: currencyservice
-  labels:
-    app: currencyservice
+  namespace: nonprod
 spec:
   replicas: 1
   selector:
@@ -14,11 +13,16 @@ spec:
       labels:
         app: currencyservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       containers:
-       - name: currencyservice
-         image: <ACR Name>.azurecr.io/currencyservice:v1
-         ports:
-           - containerPort: 7000
+        - name: currencyservice
+          image: ecommerceusecase.azurecr.io/currencyservice-nonprod:latest
+          ports:
+            - containerPort: 7000
+          env:
+            - name: PORT
+              value: "7000"
 
 
 ---
@@ -26,12 +30,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: currencyservice
-  namespace: prod
+  namespace: nonprod
 spec:
   type: ClusterIP
   selector:
     app: currencyservice
   ports:
-  - name: http
-    port: 7000
-    targetPort: 7000
+    - name: http
+      port: 7000
+      targetPort: 7000
