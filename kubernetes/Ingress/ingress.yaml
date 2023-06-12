@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: (ipaddress)
+    - host: http://20.81.111.106:80
       http:
         paths:
           - path: /adservice
