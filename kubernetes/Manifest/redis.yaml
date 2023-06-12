@@ -2,8 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-cart
-  labels:
-    app: redis-cart
+  namespace: nonprod
 spec:
   replicas: 1
   selector:
@@ -14,18 +13,23 @@ spec:
       labels:
         app: redis-cart
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       containers:
         - name: redis
           image: "redis:alpine"
           ports:
             - containerPort: 6379
+      volumes:
+        - name: redis-data
+          emptyDir: {}
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: redis-cart
-  namespace: prod
+  namespace: nonprod
 spec:
   type: ClusterIP
   selector:
