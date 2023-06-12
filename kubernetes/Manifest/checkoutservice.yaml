@@ -2,8 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: checkoutservice
-  labels:
-    app: checkoutservice
+  namespace: nonprod
 spec:
   replicas: 1
   selector:
@@ -14,24 +13,40 @@ spec:
       labels:
         app: checkoutservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       containers:
-       - name: checkoutservice
-         image: <ACR Name>.azurecr.io/checkoutservice:v1
-         ports:
-          - containerPort: 5050
-
+        - name: checkoutservice
+          image: ecommerceusecase.azurecr.io/checkoutservice-nonprod:latest
+          ports:
+            - containerPort: 9555
+          env:
+            - name: SHIPPING_SERVICE_ADDR
+              value: "shippingservice.nonprod.svc.cluster.local:50051"
+            - name: PORT
+              value: "5050"
+            - name: PRODUCT_CATALOG_SERVICE_ADDR
+              value: "productcatalogservice.nonprod.svc.cluster.local:3550"
+            - name: PAYMENT_SERVICE_ADDR
+              value: "paymentservice.nonprod.svc.cluster.local:50051"
+            - name: EMAIL_SERVICE_ADDR
+              value: "emailservice.nonprod.svc.cluster.local:5000"
+            - name: CURRENCY_SERVICE_ADDR
+              value: "currencyservice.nonprod.svc.cluster.local:7000"
+            - name: CART_SERVICE_ADDR
+              value: "cartservice.nonprod.svc.cluster.local:7070"
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: checkoutservice
-  namespace: prod
+  namespace: nonprod
 spec:
   type: ClusterIP
   selector:
     app: checkoutservice
   ports:
-  - name: http
-    port: 5050
-    targetPort: 5050
+    - name: http
+      port: 5050
+      targetPort: 5050
