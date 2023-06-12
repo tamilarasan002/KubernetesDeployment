@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: 192.168.56.103   # Replace with your domain or public IP
+    - host: ecommercek8s-dns
       http:
         paths:
           - path: /adservice
