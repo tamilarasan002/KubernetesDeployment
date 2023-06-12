@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cartservice
+  namespace: nonprod
 spec:
   replicas: 1
   selector:
@@ -12,18 +13,24 @@ spec:
       labels:
         app: cartservice
     spec:
+      imagePullSecrets:
+        - name: acr-auth
       containers:
         - name: cartservice
-          image:  <ACR Name>.azurecr.io/cartservice:v1
+          image: ecommerceusecase.azurecr.io/cartservice-nonprod:latest
           ports:
             - containerPort: 7070
-            
+          env:
+            - name: REDIS_ADDR
+              value: "redis-cart:6379"
+
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cartservice
-  namespace: prod
+  namespace: nonprod
 spec:
   type: ClusterIP
   selector:
