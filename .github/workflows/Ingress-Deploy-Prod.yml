@@ -1,24 +1,26 @@
-name: Deploy to AKS - Ingress
+name: Build and Deploy to AKS - Ingress
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - Dev
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v2
 
-    - name: Deploy to AKS
-      uses: azure/k8s-set-context@v1
-      with:
-        method: kubeconfig
-        kubeconfig: ${{ secrets.KUBECONFIG }}
 
-    - name: Apply Kubernetes manifests
-      run: |
-        cd kubernetes/Ingress/
-        kubectl apply -f ingress.yaml
+      - name: Deploy to AKS
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: Apply Kubernetes manifests
+        run: |
+          cd kubernetes/Ingress/
+          kubectl apply -f ingress.yaml
