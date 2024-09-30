@@ -1,16 +1,4 @@
-// Copyright 2018 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// server.js
 
 const path = require('path');
 const grpc = require('@grpc/grpc-js');
@@ -23,10 +11,10 @@ const logger = pino({
   name: 'paymentservice-server',
   messageKey: 'message',
   formatters: {
-    level (logLevelString, logLevelNum) {
-      return { severity: logLevelString }
-    }
-  }
+    level(logLevelString) {
+      return { severity: logLevelString };
+    },
+  },
 });
 
 class HipsterShopServer {
@@ -35,11 +23,11 @@ class HipsterShopServer {
 
     this.packages = {
       hipsterShop: this.loadProto(path.join(protoRoot, 'demo.proto')),
-      health: this.loadProto(path.join(protoRoot, 'grpc/health/v1/health.proto'))
+      health: this.loadProto(path.join(protoRoot, 'grpc/health/v1/health.proto')),
     };
 
     this.server = new grpc.Server();
-    this.loadAllProtos(protoRoot);
+    this.loadAllProtos();
   }
 
   /**
@@ -53,7 +41,7 @@ class HipsterShopServer {
       const response = charge(call.request);
       callback(null, response);
     } catch (err) {
-      console.warn(err);
+      logger.error(err);
       callback(err);
     }
   }
@@ -62,54 +50,52 @@ class HipsterShopServer {
     callback(null, { status: 'SERVING' });
   }
 
-
   listen() {
-    const server = this.server 
-    const port = this.port
-    server.bindAsync(
-      `[::]:${port}`,
+    this.server.bindAsync(
+      `[::]:${this.port}`,
       grpc.ServerCredentials.createInsecure(),
-      function () {
+      (error, port) => {
+        if (error) {
+          logger.error(`Failed to bind gRPC server: ${error.message}`);
+          process.exit(1); // Exit the process if binding fails
+        }
         logger.info(`PaymentService gRPC server started on port ${port}`);
-        server.start();
+        this.server.start();
       }
     );
   }
 
-  loadProto(path) {
-    const packageDefinition = protoLoader.loadSync(
-      path,
-      {
-        keepCase: true,
-        longs: String,
-        enums: String,
-        defaults: true,
-        oneofs: true
-      }
-    );
+  loadProto(protoPath) {
+    const packageDefinition = protoLoader.loadSync(protoPath, {
+      keepCase: true,
+      longs: String,
+      enums: String,
+      defaults: true,
+      oneofs: true,
+    });
     return grpc.loadPackageDefinition(packageDefinition);
   }
 
-  loadAllProtos(protoRoot) {
+  loadAllProtos() {
     const hipsterShopPackage = this.packages.hipsterShop.hipstershop;
     const healthPackage = this.packages.health.grpc.health.v1;
 
     this.server.addService(
       hipsterShopPackage.PaymentService.service,
       {
-        charge: HipsterShopServer.ChargeServiceHandler.bind(this)
+        charge: HipsterShopServer.ChargeServiceHandler.bind(this),
       }
     );
 
     this.server.addService(
       healthPackage.Health.service,
       {
-        check: HipsterShopServer.CheckHandler.bind(this)
+        check: HipsterShopServer.CheckHandler.bind(this),
       }
     );
   }
 }
 
-HipsterShopServer.PORT = process.env.PORT;
+HipsterShopServer.PORT = process.env.PORT || 50051;
 
 module.exports = HipsterShopServer;
