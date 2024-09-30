@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM node:20.2.0-alpine@sha256:f25b0e9d3d116e267d4ff69a3a99c0f4cf6ae94eadd87f1bf7bd68ea3ff0bef7 as builder
+FROM node:20.2.0-alpine@sha256:f25b0e9d3d116e267d4ff69a3a99c0f4cf6ae94eadd87f1bf7bd68ea3ff0bef7 AS builder
 
 # Install necessary packages
 RUN apk add --update --no-cache \
@@ -13,11 +13,11 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Copy application files
-COPY . .
-
 # Install dependencies
 RUN npm install
+
+# Copy application files
+COPY . .
 
 # Stage 2: Final image
 FROM node:20.2.0-alpine@sha256:f25b0e9d3d116e267d4ff69a3a99c0f4cf6ae94eadd87f1bf7bd68ea3ff0bef7
@@ -31,5 +31,5 @@ COPY --from=builder /usr/src/app .
 # Expose the port
 EXPOSE 50051
 
-# Start the application
+# Start the application using the start script
 CMD [ "npm", "start" ]
