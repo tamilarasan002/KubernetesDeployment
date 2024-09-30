@@ -19,6 +19,7 @@ RUN npm install
 # Copy application files
 COPY . .
 
+COPY protos/ ./protos/
 # Stage 2: Final image
 FROM node:20.2.0-alpine
 
