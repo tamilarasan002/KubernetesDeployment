@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0.302@sha256:5c638e77052b5ae4f6f1da3885035b5
 
 WORKDIR /app
 
-COPY CartService.csproj .
+COPY cartservice.csproj .
 
 RUN dotnet restore
 
