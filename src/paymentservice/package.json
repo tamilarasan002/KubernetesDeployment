@@ -5,6 +5,7 @@
   "repository": "https://github.com/GoogleCloudPlatform/microservices-demo",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jonathan Lui",
@@ -21,5 +22,14 @@
     "pino": "8.11.0",
     "simple-card-validator": "^1.1.0",
     "uuid": "^9.0.0"
+  },
+  "keywords": [
+    "microservices",
+    "payment",
+    "grpc"
+  ],
+  "homepage": "https://github.com/GoogleCloudPlatform/microservices-demo#readme",
+  "bugs": {
+    "url": "https://github.com/GoogleCloudPlatform/microservices-demo/issues"
   }
 }
