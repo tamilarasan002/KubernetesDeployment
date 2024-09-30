@@ -4,6 +4,7 @@
   "description": "A gRPC currency conversion microservice",
   "repository": "https://github.com/GoogleCloudPlatform/microservices-demo",
   "scripts": {
+    "start": "node server.js",  // Replace 'server.js' with the actual entry point of your application
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "license": "Apache-2.0",
