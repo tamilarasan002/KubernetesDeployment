@@ -1,12 +1,19 @@
 # Stage 1: Builder
-FROM node:20.2.0-alpine as builder
+FROM node:20.2.0-alpine AS builder
 
-# Install necessary packages and install dependencies
-RUN apk add --update --no-cache python3 make g++ 
+# Install necessary packages
+RUN apk add --update --no-cache \
+    python3 \
+    make \
+    g++ 
 
+# Set working directory
 WORKDIR /usr/src/app
 
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
 # Copy application files
@@ -15,13 +22,11 @@ COPY . .
 # Stage 2: Final image
 FROM node:20.2.0-alpine
 
+# Set working directory
 WORKDIR /usr/src/app
 
 # Copy built application from builder stage
 COPY --from=builder /usr/src/app .
-
-# Set environment variable
-ENV NODE_ENV=production
 
 # Expose the port
 EXPOSE 50051
