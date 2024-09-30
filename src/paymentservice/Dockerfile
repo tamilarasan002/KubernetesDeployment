@@ -29,7 +29,7 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app .
 
 # Expose the port
-EXPOSE 4051
+EXPOSE 50051
 
 # Start the application
 CMD [ "npm", "start" ]
