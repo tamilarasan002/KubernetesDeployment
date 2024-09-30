@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.302@sha256:5c638e77052b5ae4f6f1da3885035b510fc379d2ce4be274c70679114bcdb936 as builder
+FROM mcr.microsoft.com/dotnet/sdk:7.0.302 as builder
 
 FROM base as builder
 
