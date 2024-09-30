@@ -17,7 +17,7 @@ spec:
         - name: acr-auth
       containers:
         - name: currencyservice
-          image: ecommerceusecase.azurecr.io/currencyservice-nonprod:latest
+          image: k8sdeploymentregistry.azurecr.io/currencyservice-nonprod:latest
           ports:
             - containerPort: 7000
           env:
