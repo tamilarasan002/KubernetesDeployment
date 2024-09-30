@@ -1,30 +1,19 @@
-# Use the .NET SDK image for the builder stage
-FROM mcr.microsoft.com/dotnet/sdk:7.0.302 as builder
-
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-
-# Copy the project file and restore dependencies
-COPY CartService.csproj .
-
-
-RUN dotnet restore
-
-# Copy the rest of the source code
-COPY . .
-
-# Publish the application
-RUN dotnet publish -c Release -o out
-
-# Use the .NET runtime image for the final stage
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine3.13
-
-WORKDIR /app
-
-# Copy the published output from the builder stage
-COPY --from=builder /app/out .
-
-# Expose the application port
 EXPOSE 7070
 
-# Command to run the application
-CMD [ "dotnet", "CartService.dll" ]
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY ["CartService.csproj", "./"]
+RUN dotnet restore "./CartService.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "CartService.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "CartService.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "CartService.dll"]
