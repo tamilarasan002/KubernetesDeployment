@@ -17,7 +17,7 @@ spec:
         - name: acr-auth
       containers:
         - name: productcatalogservice
-          image: ecommerceusecase.azurecr.io/productcatalogservice-nonprod:latest
+          image: k8sdeploymentregistry.azurecr.io/productcatalogservice-nonprod:latest
           ports:
             - containerPort: 3550
 ---
