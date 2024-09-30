@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0.302 as builder
 WORKDIR /app
 
 # Copy the project file and restore dependencies
-COPY CartService.csproj ./
+COPY CartService.csproj .
 RUN dotnet restore
 
 # Copy the rest of the source code
