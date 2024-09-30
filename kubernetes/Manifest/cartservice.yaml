@@ -17,7 +17,7 @@ spec:
         - name: acr-auth
       containers:
         - name: cartservice
-          image: ecommerceusecase.azurecr.io/cartservice-nonprod:latest
+          image: k8sdeploymentregistry.azurecr.io/cartservice-nonprod:latest
           ports:
             - containerPort: 7070
           env:
