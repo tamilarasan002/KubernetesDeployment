@@ -15,11 +15,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0@sha256:a06d87abe11238f2fbc076149edfbf91e88f06f54ab9c7282824e346322b8665 AS build
 WORKDIR /app
 COPY . .
-RUN dotnet restore cartservice.csproj
-RUN dotnet build "./cartservice.csproj" -c Debug -o /out
+RUN dotnet restore CartService.csproj
+RUN dotnet build "./CartService.csproj" -c Debug -o /out
 
 FROM build AS publish
-RUN dotnet publish cartservice.csproj -c Debug -o /out
+RUN dotnet publish CartService.csproj -c Debug -o /out
 
 # Building final image used in running container
 FROM mcr.microsoft.com/dotnet/aspnet:7.0@sha256:1019d8b5d11ed5b4bed215d6073293a6cd7c0e70991bddb245aa15439908b152 AS final
