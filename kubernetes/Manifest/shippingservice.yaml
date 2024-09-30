@@ -17,7 +17,7 @@ spec:
         - name: acr-auth
       containers:
         - name: shippingservice
-          image: ecommerceusecase.azurecr.io/shippingservice-nonprod:latest
+          image: k8sdeploymentregistry.azurecr.io/shippingservice-nonprod:latest
           ports:
             - containerPort: 50051
 
