@@ -32,4 +32,4 @@ COPY --from=builder /usr/src/app .
 EXPOSE 50051
 
 # Start the application
-CMD [ "npm", "server.js" ]
+CMD [ "npm", "start" ]
