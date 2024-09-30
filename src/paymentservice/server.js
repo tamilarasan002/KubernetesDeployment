@@ -1,42 +1,59 @@
-// server.js
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const pino = require('pino');
 const protoLoader = require('@grpc/proto-loader');
-const charge = require('./charge'); // Assuming you have a charge.js for handling charge logic
+
+const charge = require('./charge');
 
 const logger = pino({
   name: 'paymentservice-server',
   messageKey: 'message',
   formatters: {
-    level(logLevelString) {
-      return { severity: logLevelString };
-    },
-  },
+    level (logLevelString, logLevelNum) {
+      return { severity: logLevelString }
+    }
+  }
 });
 
-class PaymentServiceServer {
-  constructor(protoRoot, port = PaymentServiceServer.PORT) {
+class HipsterShopServer {
+  constructor(protoRoot, port = HipsterShopServer.PORT) {
     this.port = port;
 
-    // Load proto files
     this.packages = {
       hipsterShop: this.loadProto(path.join(protoRoot, 'demo.proto')),
-      health: this.loadProto(path.join(protoRoot, 'grpc/health/v1/health.proto')),
+      health: this.loadProto(path.join(protoRoot, 'grpc/health/v1/health.proto'))
     };
 
     this.server = new grpc.Server();
-    this.loadAllProtos();
+    this.loadAllProtos(protoRoot);
   }
 
+  /**
+   * Handler for PaymentService.Charge.
+   * @param {*} call  { ChargeRequest }
+   * @param {*} callback  fn(err, ChargeResponse)
+   */
   static ChargeServiceHandler(call, callback) {
     try {
       logger.info(`PaymentService#Charge invoked with request ${JSON.stringify(call.request)}`);
-      const response = charge(call.request); // Assuming charge is defined in charge.js
+      const response = charge(call.request);
       callback(null, response);
     } catch (err) {
-      logger.error(err);
+      console.warn(err);
       callback(err);
     }
   }
@@ -45,51 +62,54 @@ class PaymentServiceServer {
     callback(null, { status: 'SERVING' });
   }
 
+
   listen() {
-    this.server.bindAsync(
-      `[::]:${this.port}`,
+    const server = this.server 
+    const port = this.port
+    server.bindAsync(
+      `[::]:${port}`,
       grpc.ServerCredentials.createInsecure(),
-      () => {
-        logger.info(`PaymentService gRPC server started on port ${this.port}`);
-        this.server.start();
+      function () {
+        logger.info(`PaymentService gRPC server started on port ${port}`);
+        server.start();
       }
     );
   }
 
-  loadProto(protoPath) {
-    const packageDefinition = protoLoader.loadSync(protoPath, {
-      keepCase: true,
-      longs: String,
-      enums: String,
-      defaults: true,
-      oneofs: true,
-    });
+  loadProto(path) {
+    const packageDefinition = protoLoader.loadSync(
+      path,
+      {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true
+      }
+    );
     return grpc.loadPackageDefinition(packageDefinition);
   }
 
-  loadAllProtos() {
+  loadAllProtos(protoRoot) {
     const hipsterShopPackage = this.packages.hipsterShop.hipstershop;
     const healthPackage = this.packages.health.grpc.health.v1;
 
     this.server.addService(
       hipsterShopPackage.PaymentService.service,
       {
-        charge: PaymentServiceServer.ChargeServiceHandler.bind(this),
+        charge: HipsterShopServer.ChargeServiceHandler.bind(this)
       }
     );
 
     this.server.addService(
       healthPackage.Health.service,
       {
-        check: PaymentServiceServer.CheckHandler.bind(this),
+        check: HipsterShopServer.CheckHandler.bind(this)
       }
     );
   }
 }
 
-// Set port from environment variable or default to 50051
-PaymentServiceServer.PORT = process.env.PORT || 50051;
+HipsterShopServer.PORT = process.env.PORT;
 
-// Start the server
-const server = new PaymentServiceServer(path.join(__dirname, 'protos')); // Adjust proto path as needed
-server.listen();
+module.exports = HipsterShopServer;
