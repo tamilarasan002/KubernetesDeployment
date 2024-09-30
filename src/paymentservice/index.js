@@ -16,7 +16,9 @@
 
 'use strict';
 
-if(process.env.ENABLE_TRACING === "1") {
+// Removed Google Cloud Profiler references
+
+if (process.env.ENABLE_TRACING === "1") {
   console.log("Tracing enabled.");
   const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
   const { SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
@@ -25,7 +27,6 @@ if(process.env.ENABLE_TRACING === "1") {
   const { OTLPTraceExporter } = require("@opentelemetry/exporter-otlp-grpc");
 
   const provider = new NodeTracerProvider();
-  
   const collectorUrl = process.env.COLLECTOR_SERVICE_ADDR;
 
   provider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter({ url: collectorUrl })));
@@ -34,8 +35,7 @@ if(process.env.ENABLE_TRACING === "1") {
   registerInstrumentations({
     instrumentations: [new GrpcInstrumentation()],
   });
-}
-else {
+} else {
   console.log("Tracing disabled.");
 }
 
@@ -43,13 +43,7 @@ const path = require('path');
 const HipsterShopServer = require('./server');
 
 const PORT = process.env['PORT'] || 50051; // Default to 50051 if PORT is not set
-const PROTO_PATH = path.join(__dirname, '/proto/');
-
-const server = new HipsterShopServer(PROTO_PATH, PORT);
-
-server.listen();
-
-const PROTO_PATH = path.join(__dirname, '/proto/');
+const PROTO_PATH = path.join(__dirname, '/proto/'); // Ensure this is declared only once
 
 const server = new HipsterShopServer(PROTO_PATH, PORT);
 
