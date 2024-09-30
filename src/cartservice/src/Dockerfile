@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy the project file and restore dependencies
 COPY CartService.csproj .
 
+
 RUN dotnet restore
 
 # Copy the rest of the source code
