@@ -17,7 +17,7 @@ spec:
         - name: acr-auth
       containers:
         - name: frontend
-          image: ecommerceusecase.azurecr.io/frontend-nonprod:latest
+          image: k8sdeploymentregistry.azurecr.io/frontend-nonprod:latest
           ports:
             - containerPort: 8080
           env:
